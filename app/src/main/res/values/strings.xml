@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Book Listing</string>
+
+    <!-- Text to display in the search bar [CHAR LIMIT=NONE] -->
+    <string name="search_books">Search Books</string>
+
+    <!-- Error message when there is no internet connectivity [CHAR LIMIT=NONE] -->
+    <string name="no_internet_connection">No internet connection.</string>
+
+    <!-- Text to display in the list when there are no book [CHAR LIMIT=NONE] -->
+    <string name="no_books">No books found.</string>
+
+    <!-- Text to display in the list when there are no book [CHAR LIMIT=NONE] -->
+    <string name="search">Search</string>
+
+    <!-- Text to display in the list when there are no authors [CHAR LIMIT=NONE] -->
+    <string name="no_authors">N/A</string>
+
+
+</resources>
