@@ -23,7 +23,7 @@ import java.util.List;
  * Displays information for books that are searched.
  */
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<Book>> {
+        implements LoaderManager.LoaderCallbacks<List<Book>>, View.OnClickListener {
 
     private static final String LOG_TAG = MainActivity.class.getName();
     /**
@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity
         Button searchButton = (Button) findViewById(R.id.search_button);
 
         searchButton.setOnClickListener(MainActivity.this);
-
 
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         bookListView.setEmptyView(mEmptyStateTextView);
@@ -146,18 +145,27 @@ public class MainActivity extends AppCompatActivity
         mAdapter.clear();
     }
 
-    @Override
-    public void onClick(View v) {
-        String searchString = searchField.getText().toString();
 
-        CURRENT_URL = BOOKS_REQUEST_URL + searchString;
+        @Override
+        public void onClick(View v) {
+            String searchString = searchField.getText().toString();
 
-        // When button is clicked internet connection is checked.
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
-            getLoaderManager().restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
+            CURRENT_URL = BOOKS_REQUEST_URL + searchString;
+
+//            // Set empty state text to display "No Internet Connection".
+//            mEmptyStateTextView.setText(R.string.no_internet_connection);
+
+            // When button is clicked internet connection is checked.
+            ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                getLoaderManager().restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
+             }else {
+                // Update empty state with no connection error message
+                mEmptyStateTextView.setText(R.string.no_internet_connection);
+                }
+
+            }
         }
-    }
 }
