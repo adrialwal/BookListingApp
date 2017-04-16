@@ -152,6 +152,10 @@ public class MainActivity extends AppCompatActivity
 
             CURRENT_URL = BOOKS_REQUEST_URL + searchString;
 
+
+            // I am not sure if I should call it here or use the if else statement.
+
+
 //            // Set empty state text to display "No Internet Connection".
 //            mEmptyStateTextView.setText(R.string.no_internet_connection);
 
