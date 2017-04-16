@@ -3,7 +3,6 @@ package com.example.adrialwalters.booklistingapp;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,12 +27,11 @@ public final class QueryUtils extends AppCompatActivity {
     /**
      * Tag for the log message
      */
-    public static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    private static final String LOG_TAG = QueryUtils.class.getSimpleName();
 
     /**
      * TextView that is displayed when the list is empty
      */
-    private static TextView mNoAuthor;
 
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtils} object.
@@ -45,7 +43,7 @@ public final class QueryUtils extends AppCompatActivity {
     }
 
     /**
-     * Query the Google Books dataset and return an {@link Book} objects.
+     * Query the Google Books and return an {@link Book} objects.
      */
     public static List<Book> fetchBookData(String requestUrl) {
 
@@ -53,9 +51,9 @@ public final class QueryUtils extends AppCompatActivity {
 
         // Create URL object
         URL url = createUrl(requestUrl);
+        String jsonResponse = null;
 
         // Perform HTTP request to the URL and receive a JSON response back
-        String jsonResponse = null;
         try {
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
@@ -63,21 +61,20 @@ public final class QueryUtils extends AppCompatActivity {
         }
 
         // Extract relevant fields from the JSON response and create an {@link Book}s.
-        List<Book> books = extractFeatureFromJson(jsonResponse);
-
-        // Return the {@link Earthquake}s.
-        return books;
+        return extractFeatureFromJson(jsonResponse);
     }
 
     /**
      * Returns new URL object from the given string URL.
      */
     private static URL createUrl(String stringUrl) {
+
         URL url = null;
+
         try {
             url = new URL(stringUrl);
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Problem building the URL", e);
+            Log.e(LOG_TAG, "Problem building the URL");
         }
         return url;
     }
@@ -86,7 +83,7 @@ public final class QueryUtils extends AppCompatActivity {
      * Make an HTTP request to the given URL and return a String as the response.
      */
     private static String makeHttpRequest(URL url) throws IOException {
-        String jsonResponse = "";
+        String jsonResponse = null;
 
         // If the URL is null, then return early.
         if (url == null) {
@@ -95,6 +92,7 @@ public final class QueryUtils extends AppCompatActivity {
 
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
+
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setReadTimeout(10000 /* milliseconds */);
@@ -111,7 +109,7 @@ public final class QueryUtils extends AppCompatActivity {
                 Log.e(LOG_TAG, "Error response code:" + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+            Log.e(LOG_TAG, "Problem retrieving JSON results.", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -134,7 +132,11 @@ public final class QueryUtils extends AppCompatActivity {
     private static String readFromStream(InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            // InputStreamReader reads and decodes them into characters using a specified charset
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            // Since InputStreamReader only reads a single character at a time, wrapping it in a
+            // BufferedReader will buffer the input before converting into character and returning
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
             while (line != null) {
@@ -146,7 +148,7 @@ public final class QueryUtils extends AppCompatActivity {
     }
 
     /**
-     * Return a list {@link Book} objects that has been built up from
+     * Return a list of {@link Book} objects that has been built up from
      * parsing the given JSON response
      */
     private static List<Book> extractFeatureFromJson(String bookJSON) {
@@ -170,47 +172,54 @@ public final class QueryUtils extends AppCompatActivity {
             // which represents a list of features (or books).
             JSONArray bookArray = baseJsonResponse.getJSONArray("items");
 
-            // For each book in the bookArray, create an {@link book} object
-            for (int i = 0; i < bookArray.length(); i++) {
+            // If there are results in the JSONArray, then continue
+            if (bookArray.length() > 0) {
 
-                // Get a single book at position i within the list of books
-                JSONObject volumeInfo = bookArray.getJSONObject(i);
+                // For each book in the bookArray, create an {@link book} object
+                for (int i = 0; i < bookArray.length(); i++) {
 
-                // For a given book, extra the JSONObject associated with the
-                // key called "properties", which represents a list of all properties
-                // for that book.
-                JSONObject properties = volumeInfo.getJSONObject("volumeInfo");
-                if (volumeInfo.has("authors")) {
-                    // parse the authors field
-                } else {
-                    // Authors placeholder text (e.g. "Author N/A")
-                    mNoAuthor.setText(R.string.no_authors);
+                    // Extract each "items" object, and get its "volumeInfo" object, which
+                    // contains data needed for an {@link Book} object
+                    JSONObject volumeInfo = bookArray.getJSONObject(i);
+                    JSONObject properties = volumeInfo.getJSONObject("volumeInfo");
+
+                    // Extract the "title" from the JSON object
+                    String title;
+                    if (properties.has("title")) {
+                        title = properties.getString("title");
+                    } else {
+                        title = "N/A";
+                    }
+
+                    // Extract the "authors" from the JSON object
+                    String authors = "";
+                    JSONArray authorsArray;
+
+                    if (properties.has("authors")) {
+                        authorsArray = properties.getJSONArray("authors");
+                        for (int j = 0; j < authorsArray.length(); j++) {
+                            authors += authorsArray.getString(j) + ";";
+                        }
+                        authors = authors.substring(0, authors.length() - 2);
+                    } else {
+                        authors = "N/A";
+                    }
+
+                    // Add the new {@link Book} to the list of books.
+                    books.add(new Book(title, authors));
+
+                    }
                 }
 
-                // Extract the value for the key called "book title"
-                String bookTitle = properties.getString("title");
-
-                // Extract the value for the key called "authors"
-                JSONArray authors = properties.getJSONArray("authors");
-
-                // Create a new {@link Book} object with the bookTitle, authors, datePublished,
-                // and url from the JSON response.
-                Book book = new Book(bookTitle, authors.get(0).toString());
-
-
-                // Add the new {@link Book} to the list of books.
-                books.add(book);
+            } catch(JSONException e){
+                // If an error is thrown when executing any of the above statements in the "try" block
+                // catch the exception here, so the app doesn't crash. Print a log message
+                // with the message from exception.
+                Log.e(LOG_TAG, "Problem parsing the book JSON results", e);
             }
 
-        } catch (JSONException e) {
-            // If an error is thrown when executing any of the above statements in the "try" block
-            // catch the exception here, so the app doesn't crash. Print a log message
-            // with the message from exception.
-            Log.e("QueryUtils", "Problem parsing the book JSON results", e);
+            // Return the list of books
+            return books;
         }
-
-        // Return the list of books
-        return books;
     }
-}
 

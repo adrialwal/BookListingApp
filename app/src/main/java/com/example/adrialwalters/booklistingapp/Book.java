@@ -18,7 +18,7 @@ public class Book {
      * @param title   is the title of the book
      * @param authors is the date when book was published
      */
-    public Book(String title, String authors) {
+    public Book(String title, String authors)  {
         mTitle = title;
         mAuthors = authors;
     }
@@ -36,4 +36,5 @@ public class Book {
     public String getmAuthors() {
         return mAuthors;
     }
+
 }

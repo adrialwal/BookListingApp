@@ -21,13 +21,24 @@
             tools:text="The Busy Coder's Guide to Android Development" />
 
         <TextView
-            android:id="@+id/authors"
+        android:id="@+id/authors"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        tools:text="Mark L. Murphy" />
+
+        <TextView
+            android:id="@+id/no_authors"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            tools:text="Mark L. Murphy" />
+            tools:text="N/A" />
+
+
 
 
     </LinearLayout>

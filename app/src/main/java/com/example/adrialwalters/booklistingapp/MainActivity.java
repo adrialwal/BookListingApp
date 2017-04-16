@@ -48,11 +48,9 @@ public class MainActivity extends AppCompatActivity
      */
     private TextView mEmptyStateTextView;
 
-    private EditText mSearch;
+    private EditText searchField;
 
     private static String CURRENT_URL;
-
-    private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,23 +61,12 @@ public class MainActivity extends AppCompatActivity
         // Find a reference to the {@link ListView} in the layout
         ListView bookListView = (ListView) findViewById(R.id.list);
 
-        mSearch = (EditText) findViewById(R.id.search_view);
-
+        searchField = (EditText) findViewById(R.id.search_view);
         Button searchButton = (Button) findViewById(R.id.search_button);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String Search = mSearch.getText().toString();
-                CURRENT_URL = BOOKS_REQUEST_URL + Search;
 
-                // When button is clicked internet connection is checked.
-                ConnectivityManager cm =
-                        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                final boolean isConnected = activeNetwork != null &&
-                        activeNetwork.isConnectedOrConnecting();
-                getLoaderManager().restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
-            }
-        });
+        searchButton.setOnClickListener(MainActivity.this);
+
+
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         bookListView.setEmptyView(mEmptyStateTextView);
 
@@ -157,5 +144,20 @@ public class MainActivity extends AppCompatActivity
 
         // Loader reset, so we can clear out our existing data.
         mAdapter.clear();
+    }
+
+    @Override
+    public void onClick(View v) {
+        String searchString = searchField.getText().toString();
+
+        CURRENT_URL = BOOKS_REQUEST_URL + searchString;
+
+        // When button is clicked internet connection is checked.
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+            getLoaderManager().restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
+        }
     }
 }
