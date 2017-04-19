@@ -146,30 +146,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-        @Override
-        public void onClick(View v) {
-            String searchString = searchField.getText().toString();
+    @Override
+    public void onClick(View v) {
+        String searchString = searchField.getText().toString();
 
-            CURRENT_URL = BOOKS_REQUEST_URL + searchString;
+        CURRENT_URL = BOOKS_REQUEST_URL + searchString;
 
-
-            // I am not sure if I should call it here or use the if else statement.
-
-
-//            // Set empty state text to display "No Internet Connection".
-//            mEmptyStateTextView.setText(R.string.no_internet_connection);
-
-            // When button is clicked internet connection is checked.
-            ConnectivityManager cm =
-                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
-                getLoaderManager().restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
-             }else {
-                // Update empty state with no connection error message
-                mEmptyStateTextView.setText(R.string.no_internet_connection);
-                }
-
+        // When button is clicked internet connection is checked.
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+            getLoaderManager().restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
+         }else {
+            // Update empty state with no connection error message
+            mEmptyStateTextView.setText(R.string.no_internet_connection);
             }
+
         }
-}
+    }
