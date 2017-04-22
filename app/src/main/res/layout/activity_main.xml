@@ -20,7 +20,7 @@
         android:layout_alignBottom="@+id/search_view"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:text="Search" />
+        android:text="@string/search_button" />
 
     <!-- Layout for a list of books after search is done-->
     <ListView

@@ -158,10 +158,10 @@ public class MainActivity extends AppCompatActivity
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
             getLoaderManager().restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
-         }else {
+        } else {
             // Update empty state with no connection error message
             mEmptyStateTextView.setText(R.string.no_internet_connection);
-            }
-
         }
+
     }
+}

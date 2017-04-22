@@ -193,10 +193,9 @@ public final class QueryUtils extends AppCompatActivity {
 
                     // Extract the "authors" from the JSON object
                     String authors = "";
-                    JSONArray authorsArray;
+                    JSONArray authorsArray = properties.getJSONArray("authors");
 
                     if (properties.has("authors")) {
-                        authorsArray = properties.getJSONArray("authors");
                         for (int j = 0; j < authorsArray.length(); j++) {
                             authors += authorsArray.getString(j) + ";";
                         }
@@ -208,18 +207,18 @@ public final class QueryUtils extends AppCompatActivity {
                     // Add the new {@link Book} to the list of books.
                     books.add(new Book(title, authors));
 
-                    }
                 }
-
-            } catch(JSONException e){
-                // If an error is thrown when executing any of the above statements in the "try" block
-                // catch the exception here, so the app doesn't crash. Print a log message
-                // with the message from exception.
-                Log.e(LOG_TAG, "Problem parsing the book JSON results", e);
             }
 
-            // Return the list of books
-            return books;
+        } catch (JSONException e) {
+            // If an error is thrown when executing any of the above statements in the "try" block
+            // catch the exception here, so the app doesn't crash. Print a log message
+            // with the message from exception.
+            Log.e(LOG_TAG, "Problem parsing the book JSON results", e);
         }
+
+        // Return the list of books
+        return books;
     }
+}
 
